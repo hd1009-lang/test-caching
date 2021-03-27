@@ -2,8 +2,9 @@ import express from 'express'
 const router = express.Router();
 import Product from '../controllers/productCtrl.js'
 import auth from '../middleware/auth.js'
+import {cache} from '../middleware/cache.js'
 import isAdmin from '../middleware/isAdmin.js'
-router.get('/',Product.getAllProduct);
+router.get('/',cache,Product.getAllProduct);
 router.get('/:id',Product.getDetailProduct);
 router.post('/create',auth,isAdmin,Product.createProduct)
 router.delete('/:id/delete',auth,isAdmin,Product.deleteProduct)

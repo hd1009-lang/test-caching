@@ -1,9 +1,10 @@
 import ProductMD from '../models/productModel.js';
 import User from '../models/userModel.js';
-
+import {client} from '../middleware/cache.js'
 const Product = {
   getAllProduct: async (req, res) => {
     try {
+      console.log('Fetching data........');
       const pageSize = 6;
       const page = Number(req.query.pageNumber) || 1
       const keyword=req.query.keyword ? {
@@ -12,8 +13,12 @@ const Product = {
           $options:'i'
         }
       }:{}
+      const username='allproduct';
+
       const count = await ProductMD.countDocuments({ ...keyword })
       const products = await ProductMD.find({...keyword}).limit(pageSize).skip(pageSize * (page - 1))
+      const repos=JSON.stringify({ products, page, pages: Math.ceil(count / pageSize)});
+      client.setex(username,3600,repos)
       res.json({ products, page, pages: Math.ceil(count / pageSize)})
     } catch (error) {
       return res.status(400).json({ msg: 'Không tìm thấy' });

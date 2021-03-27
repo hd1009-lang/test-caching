@@ -13,7 +13,7 @@ const Product = {
           $options:'i'
         }
       }:{}
-      const username='allproduct';
+      const username=`allproduct${page}`;
 
       const count = await ProductMD.countDocuments({ ...keyword })
       const products = await ProductMD.find({...keyword}).limit(pageSize).skip(pageSize * (page - 1))
@@ -26,7 +26,11 @@ const Product = {
   },
   getDetailProduct: async (req, res) => {
     try {
+      console.log('Fetching data........');
+      const {id:username}=req.params;
       const product = await ProductMD.findById(req.params.id);
+      const repos=JSON.stringify(product);
+      client.setex(username,3600,repos)
       res.json(product);
     } catch (error) {
       res.status(400).json({ msg: 'Không tìm thấy' });

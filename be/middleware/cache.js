@@ -6,22 +6,26 @@ export const client=redis.createClient({
 })
 
 
+
 export const cache=(req,res,next)=>{
   // console.log(_.isEmpty(req.params));
+  console.log(req.params);
   if(_.isEmpty(req.params)){
-    console.log('ok');
-    var username="allproduct";
+    const page = Number(req.query.pageNumber) || 1
+
+    var username=`allproduct${page}`;
   }else{
-    console.log('no');
     var {id:username}=req.params;
   }
   client.get(username,(err,data)=>{
     if(err) throw err;
     if(data !== null){
-      // console.log(data);
+      console.log('Có data');
       return res.json(JSON.parse(data))
     }else{
+      console.log('Không có data');
       next();
     }
   })
 }
+
